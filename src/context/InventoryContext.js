@@ -12,7 +12,7 @@ export const InventoryProvider = ({ children }) => {
   const { user } = useAuth();
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(false);
-  console.log("InvLoading: ", loading);
+
   useEffect(() => {
     if (user) {
       fetchUserInventory(user.uid);
