@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material";
 import React from "react";
 

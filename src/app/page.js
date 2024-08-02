@@ -26,7 +26,7 @@ const Home = () => {
           left: 0,
           width: "100%",
           height: "100%",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          backgroundColor: "rgba(0, 0, 0, 0.3)",
           backdropFilter: "blur(10px)",
           zIndex: -1,
         },
@@ -90,8 +90,8 @@ const Home = () => {
             padding: isMobile ? "0.5rem 1rem" : "1rem 2rem",
             alignSelf: "center",
             color: "gray",
+            "&:hover": { color: "darkgray" },
             backgroundColor: "rgba(0, 0, 0, 0.5)",
-            backdropFilter: "blur(10px)",
           }}
           onClick={() => router.push("/auth")}
         >

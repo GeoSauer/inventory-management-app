@@ -1,4 +1,6 @@
-import { useInventory } from "@/context/inventoryContext";
+"use client";
+
+import { useInventory } from "@/context/InventoryContext";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import React, { useMemo, useState } from "react";
 import SearchBar from "./SearchBar";

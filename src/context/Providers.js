@@ -1,6 +1,8 @@
+"use client";
+
 import React from "react";
-import { AuthProvider } from "./authContext";
-import { InventoryProvider } from "./inventoryContext";
+import { AuthProvider } from "./AuthContext";
+import { InventoryProvider } from "./InventoryContext";
 
 const Providers = ({ children }) => {
   return (

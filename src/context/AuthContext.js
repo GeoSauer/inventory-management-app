@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useContext, createContext } from "react";
 import {
   createUserWithEmailAndPassword,
@@ -8,6 +10,7 @@ import {
 import { useRouter } from "next/navigation";
 import { auth } from "@/app/firebase";
 import { makeErrorMessagesReadable } from "@/utils/misc";
+import Loading from "@/components/Loading";
 
 const AuthContext = createContext(null);
 
@@ -16,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
-
+  console.log("AuthLoading: ", loading);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -73,7 +76,9 @@ export const AuthProvider = ({ children }) => {
     handleSignOut,
   };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>{loading ? <Loading /> : children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

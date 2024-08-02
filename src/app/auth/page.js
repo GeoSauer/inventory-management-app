@@ -13,7 +13,7 @@ import {
   useTheme,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Auth() {
   const theme = useTheme();
@@ -24,7 +24,6 @@ export default function Auth() {
   const [returningUser, setReturningUser] = useState(true);
 
   const { handleSignIn, handleSignUp, error } = useAuth();
-
   const onSignUp = () => {
     handleSignUp(email, password);
   };

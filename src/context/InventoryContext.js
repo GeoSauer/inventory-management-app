@@ -1,15 +1,18 @@
+"use client";
+
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { collection, doc, getDocs, setDoc, deleteDoc, getDoc } from "firebase/firestore";
-import { useAuth } from "./authContext";
+import { useAuth } from "./AuthContext";
 import { firestore } from "@/app/firebase";
+import Loading from "@/components/Loading";
 
 const InventoryContext = createContext(undefined);
 
 export const InventoryProvider = ({ children }) => {
   const { user } = useAuth();
   const [inventory, setInventory] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const [loading, setLoading] = useState(false);
+  console.log("InvLoading: ", loading);
   useEffect(() => {
     if (user) {
       fetchUserInventory(user.uid);
@@ -101,7 +104,11 @@ export const InventoryProvider = ({ children }) => {
 
   const value = { inventory, addItem, removeItem, editItem, loading };
 
-  return <InventoryContext.Provider value={value}>{children}</InventoryContext.Provider>;
+  return (
+    <InventoryContext.Provider value={value}>
+      {loading ? <Loading /> : children}
+    </InventoryContext.Provider>
+  );
 };
 
 export const useInventory = () => {

@@ -1,4 +1,5 @@
-// components/SearchBar.js
+"use client";
+
 import React, { useState } from "react";
 import { TextField, Stack, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 
