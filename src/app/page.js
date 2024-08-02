@@ -9,17 +9,32 @@ export default function Home() {
   const { handleSignOut } = useAuth();
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
-  const { inventory, addItem, removeItem } = useInventory();
+  const [itemQuantity, setItemQuantity] = useState(1);
+  const [editing, setEditing] = useState(false);
+  const [oldName, setOldName] = useState(itemName);
+
+  const { inventory, addItem, removeItem, editItem } = useInventory();
+
+  const resetState = () => {
+    setOpen(false);
+    setEditing(false);
+    setItemName("");
+    setItemQuantity(1);
+  };
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => resetState();
 
   const handleAddItem = () => {
     if (!itemName.trim()) return;
 
-    addItem(itemName);
-    setItemName("");
-    handleClose();
+    if (editing) {
+      editItem(oldName, { name: itemName, quantity: itemQuantity });
+    } else {
+      addItem(itemName, itemQuantity);
+    }
+
+    resetState();
   };
 
   return (
@@ -55,20 +70,30 @@ export default function Home() {
             gap: 3,
           }}
         >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Add Item
+          <Typography id="modal-modal-title" variant="h6" component="h2" color={"black"}>
+            {editing ? "Edit Item" : "Add Item"}
           </Typography>
           <Stack width="100%" direction={"row"} spacing={2}>
             <TextField
-              id="outlined-basic"
+              id="item-name"
               label="Item"
               variant="outlined"
               fullWidth
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
             />
-            <Button variant="outlined" onClick={handleAddItem}>
-              Add
+            <TextField
+              id="item-quantity"
+              label="Quantity"
+              variant="outlined"
+              type="number"
+              fullWidth
+              value={itemQuantity}
+              onChange={(e) => setItemQuantity(Number(e.target.value))}
+              inputProps={{ min: 1 }}
+            />
+            <Button variant="outlined" onClick={handleAddItem} disabled={!itemName.trim()}>
+              {editing ? "Save" : "Add"}
             </Button>
           </Stack>
         </Box>
@@ -107,8 +132,21 @@ export default function Home() {
               <Typography variant={"h3"} color={"#333"} textAlign={"center"}>
                 Quantity: {quantity}
               </Typography>
+
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setEditing(true);
+                  setItemName(name);
+                  setOldName(name);
+                  setItemQuantity(quantity);
+                  setOpen(true);
+                }}
+              >
+                Edit
+              </Button>
               <Button variant="contained" onClick={() => removeItem(name)}>
-                Remove
+                Delete
               </Button>
             </Box>
           ))}

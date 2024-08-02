@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { collection, doc, getDocs, setDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
-import { useRouter } from "next/navigation";
 import { useAuth } from "./authContext";
 
 const InventoryContext = createContext(undefined);
@@ -10,7 +9,6 @@ export const InventoryProvider = ({ children }) => {
   const { user } = useAuth();
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     if (user) {
@@ -35,15 +33,15 @@ export const InventoryProvider = ({ children }) => {
     }
   };
 
-  const addItem = async (item) => {
+  const addItem = async (item, quantity) => {
     if (user) {
       setLoading(true);
       try {
         const itemRef = doc(firestore, `users/${user.uid}/inventory/${item}`);
         const itemSnap = await getDoc(itemRef);
         const currentQuantity = itemSnap.exists() ? itemSnap.data().quantity || 0 : 0;
-        await setDoc(itemRef, { quantity: currentQuantity + 1 }, { merge: true });
-        fetchUserInventory(user.uid);
+        await setDoc(itemRef, { quantity: currentQuantity + quantity }, { merge: true });
+        await fetchUserInventory(user.uid);
       } catch (error) {
         console.error("Error adding item:", error);
       } finally {
@@ -59,13 +57,8 @@ export const InventoryProvider = ({ children }) => {
         const itemRef = doc(firestore, `users/${user.uid}/inventory/${item}`);
         const itemSnap = await getDoc(itemRef);
         if (itemSnap.exists()) {
-          const currentQuantity = itemSnap.data().quantity || 0;
-          if (currentQuantity > 1) {
-            await setDoc(itemRef, { quantity: currentQuantity - 1 }, { merge: true });
-          } else {
-            await deleteDoc(itemRef);
-          }
-          fetchUserInventory(user.uid);
+          await deleteDoc(itemRef);
+          await fetchUserInventory(user.uid);
         }
       } catch (error) {
         console.error("Error removing item:", error);
@@ -75,7 +68,38 @@ export const InventoryProvider = ({ children }) => {
     }
   };
 
-  const value = { inventory, addItem, removeItem, loading };
+  const editItem = async (item, updatedData) => {
+    if (user) {
+      setLoading(true);
+      try {
+        const itemRef = doc(firestore, `users/${user.uid}/inventory/${item}`);
+        const itemSnap = await getDoc(itemRef);
+
+        if (itemSnap.exists()) {
+          const currentData = itemSnap.data();
+
+          if (currentData.name !== updatedData.name) {
+            const newItemRef = doc(firestore, `users/${user.uid}/inventory/${updatedData.name}`);
+            await setDoc(newItemRef, updatedData);
+
+            await deleteDoc(itemRef);
+          } else {
+            if (currentData.quantity !== updatedData.quantity) {
+              await setDoc(itemRef, { quantity: updatedData.quantity }, { merge: true });
+            }
+          }
+
+          await fetchUserInventory(user.uid);
+        }
+      } catch (error) {
+        console.error("Error editing item:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const value = { inventory, addItem, removeItem, editItem, loading };
 
   return <InventoryContext.Provider value={value}>{children}</InventoryContext.Provider>;
 };
