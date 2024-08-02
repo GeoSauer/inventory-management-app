@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       await signOut(auth);
-      await router.push("/auth");
+      // router.push("/auth"); //TODO circle back on logout going to landing vs auth
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {

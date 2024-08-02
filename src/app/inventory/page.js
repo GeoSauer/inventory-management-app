@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { useInventory } from "@/context/inventoryContext";
 import ItemModal from "@/components/ItemModal";
 import InventoryList from "@/components/InventoryList";
+import { useAuth } from "@/context/authContext";
+import { useRouter } from "next/navigation";
 
 export default function Inventory() {
   const [open, setOpen] = useState(false);
@@ -13,7 +15,13 @@ export default function Inventory() {
   const [editing, setEditing] = useState(false);
   const [oldName, setOldName] = useState(itemName);
 
+  const router = useRouter();
   const { addItem, editItem } = useInventory();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) router.push("/auth");
+  }, [user]);
 
   const resetState = () => {
     setOpen(false);

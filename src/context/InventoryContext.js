@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { collection, doc, getDocs, setDoc, deleteDoc, getDoc } from "firebase/firestore";
-import { firestore } from "../firebase";
 import { useAuth } from "./authContext";
+import { firestore } from "@/app/firebase";
 
 const InventoryContext = createContext(undefined);
 
