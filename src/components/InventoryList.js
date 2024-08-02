@@ -1,12 +1,42 @@
 import { useInventory } from "@/context/inventoryContext";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useMemo, useState } from "react";
+import SearchBar from "./SearchBar";
 
 export default function InventoryList({ onEdit }) {
   const { inventory, removeItem } = useInventory();
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState("title-asc");
+
+  const filteredItems = useMemo(() => {
+    let filtered = inventory.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    switch (sortOrder) {
+      case "title-asc":
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "title-desc":
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case "quantity-asc":
+        filtered.sort((a, b) => a.quantity - b.quantity);
+        break;
+      case "quantity-desc":
+        filtered.sort((a, b) => b.quantity - a.quantity);
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
+  }, [inventory, searchQuery, sortOrder]);
+
   return (
     <Box border={"1px solid #333"}>
+      <SearchBar onSearch={setSearchQuery} onSort={setSortOrder} />
       <Box
         width="800px"
         height="100px"
@@ -20,7 +50,7 @@ export default function InventoryList({ onEdit }) {
         </Typography>
       </Box>
       <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
-        {inventory.map(({ name, quantity }) => (
+        {filteredItems.map(({ name, quantity }) => (
           <Box
             key={name}
             width="100%"

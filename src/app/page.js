@@ -54,6 +54,7 @@ export default function Home() {
       flexDirection={"column"}
       alignItems={"center"}
       gap={2}
+      backgroundColor={"white"}
     >
       <ItemModal
         open={open}
