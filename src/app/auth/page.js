@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "@/context/authContext";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
