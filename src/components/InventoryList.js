@@ -36,7 +36,6 @@ export default function InventoryList({ onEdit }) {
 
   return (
     <Box border={"1px solid #333"}>
-      <SearchBar onSearch={setSearchQuery} onSort={setSortOrder} />
       <Box
         width="800px"
         height="100px"
@@ -49,6 +48,7 @@ export default function InventoryList({ onEdit }) {
           Inventory Items
         </Typography>
       </Box>
+      <SearchBar onSearch={setSearchQuery} onSort={setSortOrder} />
       <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
         {filteredItems.map(({ name, quantity }) => (
           <Box

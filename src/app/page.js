@@ -1,74 +1,105 @@
 "use client";
 
-import { useState } from "react";
-import { Box } from "@mui/material";
-import { useInventory } from "@/context/inventoryContext";
-import ItemModal from "@/components/ItemModal";
-import InventoryList from "@/components/InventoryList";
+import React from "react";
+import { Container, Box, Typography, Button, useTheme, useMediaQuery } from "@mui/material";
+import { useRouter } from "next/navigation";
+import Logo from "@/components/Logo";
 
-export default function Home() {
-  const [open, setOpen] = useState(false);
-  const [itemName, setItemName] = useState("");
-  const [itemQuantity, setItemQuantity] = useState(1);
-  const [editing, setEditing] = useState(false);
-  const [oldName, setOldName] = useState(itemName);
-
-  const { addItem, editItem } = useInventory();
-
-  const resetState = () => {
-    setOpen(false);
-    setEditing(false);
-    setItemName("");
-    setItemQuantity(1);
-  };
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => resetState();
-
-  const handleAddItem = () => {
-    if (!itemName.trim()) return;
-
-    if (editing) {
-      editItem(oldName, { name: itemName, quantity: itemQuantity });
-    } else {
-      addItem(itemName, itemQuantity);
-    }
-
-    resetState();
-  };
-
-  const handleEdit = (editName, editQuantity) => {
-    setEditing(true);
-    setItemName(editName);
-    setOldName(editName);
-    setItemQuantity(editQuantity);
-    setOpen(true);
-  };
+const Home = () => {
+  const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Box
-      width="100vw"
-      height="100vh"
-      display={"flex"}
-      justifyContent={"center"}
-      flexDirection={"column"}
-      alignItems={"center"}
-      gap={2}
-      backgroundColor={"white"}
+      sx={{
+        position: "fixed",
+        width: "100vw",
+        height: "100vh",
+        backgroundImage: "url(/images/landing.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          backdropFilter: "blur(10px)",
+          zIndex: -1,
+        },
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
-      <ItemModal
-        open={open}
-        onOpen={handleOpen}
-        onClose={handleClose}
-        editing={editing}
-        itemName={itemName}
-        setItemName={setItemName}
-        itemQuantity={itemQuantity}
-        setItemQuantity={setItemQuantity}
-        oldName={oldName}
-        onAddItem={handleAddItem}
-      />
-      <InventoryList onEdit={handleEdit} />
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          width: "100%",
+          padding: "1rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          backdropFilter: "blur(5px)",
+          zIndex: 1,
+        }}
+      >
+        <Logo width={isMobile ? 200 : 300} />
+        <Button
+          variant="text"
+          onClick={() => router.push("/auth")}
+          sx={{
+            padding: isMobile ? "0.5rem 1rem" : "1rem 2rem",
+            alignSelf: "center",
+            color: "gray",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          Sign In
+        </Button>
+      </Box>
+      <Container
+        sx={{
+          zIndex: 1,
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          py: isMobile ? "1rem" : "2.5rem",
+          borderTop: "1px solid gray",
+          borderBottom: "1px solid gray",
+          gap: "1.5rem",
+          textAlign: "center",
+          marginTop: "-10rem",
+        }}
+      >
+        <Typography variant={isMobile ? "h4" : "h3"} color={"gray"}>
+          Welcome to CupboardCompass
+        </Typography>
+        <Typography variant={isMobile ? "h6" : "h5"} fontWeight={"300"} color={"gray"}>
+          Your one stop shop for pantry perfection
+        </Typography>
+        <Button
+          variant="text"
+          sx={{
+            padding: isMobile ? "0.5rem 1rem" : "1rem 2rem",
+            alignSelf: "center",
+            color: "gray",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(10px)",
+          }}
+          onClick={() => router.push("/auth")}
+        >
+          Come on in!
+        </Button>
+      </Container>
     </Box>
   );
-}
+};
+
+export default Home;

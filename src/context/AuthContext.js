@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/");
+      router.push("/inventory");
     } catch (error) {
       setError(makeErrorMessagesReadable(error.message));
     } finally {
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/");
+      router.push("/inventory");
     } catch (error) {
       setError(makeErrorMessagesReadable(error.message));
     } finally {
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       await signOut(auth);
-      router.push("/auth");
+      await router.push("/auth");
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {
