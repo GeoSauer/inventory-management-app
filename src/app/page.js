@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import { Box, Stack, Typography, Button, Modal, TextField } from "@mui/material";
 import { collection, doc, getDocs, query, setDoc, deleteDoc, getDoc } from "firebase/firestore";
-import { firestore } from "./firebase";
+import { auth, firestore } from "./firebase";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { signOut } from "firebase/auth";
 
 const style = {
   position: "absolute",
@@ -21,63 +24,104 @@ const style = {
 };
 
 export default function Home() {
+  const user = useAuth();
+  const router = useRouter();
+
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user !== null) {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        updateInventory();
+      } else {
+        router.push("/auth");
+      }
+    }
+  }, [loading, user, router]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push("/auth");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   const updateInventory = async () => {
+    if (!user) return;
     try {
-      const inventoryRef = collection(firestore, "inventory");
-      const snapshot = await getDocs(inventoryRef);
-
-      const inventoryList = snapshot.docs.map((doc) => ({
-        name: doc.id,
-        ...doc.data(),
-      }));
-
-      setInventory(inventoryList);
+      const items = await fetchUserInventory(user.uid);
+      setInventory(items);
     } catch (error) {
       console.error("Error fetching inventory:", error);
     }
   };
 
-  useEffect(() => {
-    updateInventory();
-  }, []);
-
-  const addItem = async (item) => {
-    try {
-      const docRef = doc(collection(firestore, "inventory"), item);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const { quantity } = docSnap.data();
-        await setDoc(docRef, { quantity: quantity + 1 });
-      } else {
-        await setDoc(docRef, { quantity: 1 });
-      }
-
-      await updateInventory();
-    } catch (error) {
-      console.error("Error adding item:", error);
+  const handleAddItem = (item) => {
+    if (user) {
+      addItemForUser(item, user.uid).then(() => updateInventory());
     }
   };
 
-  const removeItem = async (item) => {
-    try {
-      const docRef = doc(collection(firestore, "inventory"), item);
-      const docSnap = await getDoc(docRef);
+  const handleRemoveItem = (item) => {
+    if (user) {
+      removeItem(item, user.uid).then(() => updateInventory());
+    }
+  };
+  const fetchUserInventory = async (userUid) => {
+    const userInventoryRef = collection(firestore, `users/${userUid}/inventory`);
+    const snapshot = await getDocs(userInventoryRef);
+    const items = snapshot.docs.map((doc) => ({
+      name: doc.id,
+      ...doc.data(),
+    }));
 
-      if (docSnap.exists()) {
-        const { quantity } = docSnap.data();
-        if (quantity === 1) {
-          await deleteDoc(docRef);
+    return items;
+  };
+
+  const addItemForUser = async (item, userUid) => {
+    try {
+      if (!userUid) throw new Error("User UID is not defined");
+
+      const itemRef = doc(firestore, `users/${userUid}/inventory/${item}`);
+      const itemSnap = await getDoc(itemRef);
+
+      if (itemSnap.exists()) {
+        const currentQuantity = itemSnap.data().quantity || 0;
+        await setDoc(itemRef, { quantity: currentQuantity + 1 }, { merge: true });
+      } else {
+        await setDoc(itemRef, { quantity: 1 });
+      }
+    } catch (error) {
+      console.error("Error adding item for user:", error);
+    }
+  };
+
+  const removeItem = async (item, userUid) => {
+    try {
+      if (!userUid) throw new Error("User UID is not defined");
+
+      const itemRef = doc(firestore, `users/${userUid}/inventory/${item}`);
+      const itemSnap = await getDoc(itemRef);
+
+      if (itemSnap.exists()) {
+        const currentQuantity = itemSnap.data().quantity || 0;
+        if (currentQuantity > 1) {
+          await setDoc(itemRef, { quantity: currentQuantity - 1 }, { merge: true });
         } else {
-          await setDoc(docRef, { quantity: quantity - 1 });
+          await deleteDoc(itemRef);
         }
       }
-
-      await updateInventory();
     } catch (error) {
       console.error("Error removing item:", error);
     }
@@ -96,6 +140,7 @@ export default function Home() {
       alignItems={"center"}
       gap={2}
     >
+      <Button onClick={handleSignOut}>X</Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -118,7 +163,7 @@ export default function Home() {
             <Button
               variant="outlined"
               onClick={() => {
-                addItem(itemName);
+                handleAddItem(itemName);
                 setItemName("");
                 handleClose();
               }}
@@ -162,7 +207,7 @@ export default function Home() {
               <Typography variant={"h3"} color={"#333"} textAlign={"center"}>
                 Quantity: {quantity}
               </Typography>
-              <Button variant="contained" onClick={() => removeItem(name)}>
+              <Button variant="contained" onClick={() => handleRemoveItem(name)}>
                 Remove
               </Button>
             </Box>
