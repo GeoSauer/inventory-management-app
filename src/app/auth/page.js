@@ -35,26 +35,36 @@ export default function Auth() {
 
   return (
     <Grid container component="main" sx={{ height: "100vh" }}>
-      <Grid
-        item
-        xs={false}
-        sm={4}
-        md={7}
-        sx={{
-          backgroundImage: 'url("/images/pantry_vertical.jpeg")',
-          backgroundSize: "cover",
-          backgroundPosition: "left",
-        }}
-      />
+      {!isMobile && (
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: 'url("/images/pantry_vertical.jpeg")',
+            backgroundSize: "cover",
+            backgroundPosition: "left",
+          }}
+        />
+      )}
       <Grid
         item
         xs={12}
-        sm={8}
-        md={5}
+        sm={isMobile ? 12 : 8}
+        md={isMobile ? 12 : 5}
         component={Paper}
         elevation={6}
         square
-        sx={{ backgroundColor: "lightgray" }}
+        sx={{
+          ...(isMobile
+            ? {
+                backgroundImage: 'url("/images/pantry_vertical.jpeg")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }
+            : { backgroundColor: "lightgray" }),
+        }}
       >
         <Box
           sx={{
@@ -63,6 +73,9 @@ export default function Auth() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            backgroundColor: isMobile ? "white" : "",
+            p: "2rem",
+            borderRadius: "10px",
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
