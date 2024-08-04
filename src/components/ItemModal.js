@@ -97,7 +97,7 @@ export default function ItemModal({
               )}
             </ButtonGroup>
           </Stack>
-          //TODO debug camera stuff further
+          {/* //TODO debug camera stuff further */}
           {/* {image ? (
             <Box>
               <img src={image} alt="Captured" style={{ width: "100%", borderRadius: "10px" }} />

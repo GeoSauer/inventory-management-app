@@ -12,7 +12,7 @@ export default function Inventory() {
 
   useEffect(() => {
     if (!user) router.push("/auth");
-  }, [user]);
+  }, [user, router]);
 
   return (
     <Box
