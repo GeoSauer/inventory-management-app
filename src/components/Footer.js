@@ -29,7 +29,7 @@ export default function StickyFooter() {
     <Box
       component="footer"
       sx={{
-        py: 2,
+        py: 1,
         position: "fixed",
         bottom: 0,
         zIndex: 1,

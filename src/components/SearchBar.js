@@ -18,7 +18,12 @@ export default function SearchBar({ onSearch, onSort }) {
   };
 
   return (
-    <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+    <Stack
+      direction="row"
+      spacing={2}
+      alignItems="center"
+      sx={{ backgroundColor: "white", p: "1rem" }}
+    >
       <TextField
         label="Search"
         variant="outlined"

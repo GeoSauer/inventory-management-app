@@ -1,7 +1,20 @@
 "use client";
 
-import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  IconButton,
+  Modal,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
+import { useInventory } from "@/context/InventoryContext";
 
 export default function ItemModal({
   open,
@@ -14,35 +27,32 @@ export default function ItemModal({
   onAddItem,
   onOpen,
 }) {
+  const { removeItem } = useInventory();
+
   return (
     <>
-      <Button variant="contained" onClick={onOpen}>
+      <Button variant="contained" onClick={onOpen} sx={{ borderRadius: 0 }}>
         Add New Item
       </Button>
 
-      <Modal
-        open={open}
-        onClose={onClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+      <Modal open={open} onClose={onClose}>
         <Box
           sx={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: "min(90vw, 30rem)",
             bgcolor: "white",
-            border: "2px solid #000",
             boxShadow: 24,
             p: 4,
             display: "flex",
             flexDirection: "column",
             gap: 3,
+            borderRadius: "10px",
           }}
         >
-          <Typography id="modal-modal-title" variant="h6" component="h2" color={"black"}>
+          <Typography variant="h6" component="h2" color={"black"}>
             {editing ? "Edit Item" : "Add Item"}
           </Typography>
           <Stack width="100%" direction={"row"} spacing={2}>
@@ -64,9 +74,16 @@ export default function ItemModal({
               onChange={(e) => setItemQuantity(Number(e.target.value))}
               inputProps={{ min: 1 }}
             />
-            <Button variant="outlined" onClick={onAddItem} disabled={!itemName.trim()}>
-              {editing ? "Save" : "Add"}
-            </Button>
+            <ButtonGroup>
+              <IconButton size="sm" onClick={onAddItem} disabled={!itemName.trim()}>
+                {editing ? <SaveIcon fontSize="inherit" /> : <AddIcon fontSize="inherit" />}
+              </IconButton>
+              {editing && (
+                <IconButton size="sm" onClick={() => removeItem(item.name)}>
+                  <DeleteIcon fontSize="inherit" />
+                </IconButton>
+              )}
+            </ButtonGroup>
           </Stack>
         </Box>
       </Modal>
