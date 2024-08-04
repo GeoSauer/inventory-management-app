@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { Box, Button, Container, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Container, Stack, useMediaQuery, useTheme } from "@mui/material";
 import Logo from "./Logo";
 
 export default function Header() {
@@ -20,7 +20,6 @@ export default function Header() {
         zIndex: 1,
         width: "100vw",
         backdropFilter: "blur(10px)",
-        backgroundColor: "rgba(0, 0, 0, 0.)",
       }}
     >
       <Container
@@ -32,7 +31,6 @@ export default function Header() {
       >
         <Logo width={isMobile ? 200 : 300} />
         <Stack>
-          <Typography color={"lightgray"}>Signed in as {user.email}</Typography>
           <Button
             variant="outlined"
             onClick={handleSignOut}

@@ -6,9 +6,11 @@ import {
   IconButton,
   Paper,
   Stack,
+  styled,
   Table,
   TableBody,
   TableCell,
+  tableCellClasses,
   TableContainer,
   TableHead,
   TablePagination,
@@ -102,25 +104,42 @@ export default function InventoryList() {
     return filtered;
   }, [inventory, searchQuery, sortOrder]);
 
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: "#bdbdbd",
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+  console.log(theme.palette);
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+
   const renderInvRows = () => {
     return (
       <>
         {filteredItems.length > 0 ? (
           filteredItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => (
-            <TableRow
-              key={item.name}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 }, width: "100%" }}
-            >
-              <TableCell component="th" scope="row">
+            <StyledTableRow key={item.name}>
+              <StyledTableCell component="th" scope="row">
                 {item.name}
-              </TableCell>
-              <TableCell align="right">{item.quantity}</TableCell>
-              <TableCell align="right">
+              </StyledTableCell>
+              <StyledTableCell align="right">{item.quantity}</StyledTableCell>
+              <StyledTableCell align="right">
                 <IconButton size="sm" onClick={() => handleEdit(item.name, item.quantity)}>
                   <ModeEditIcon fontSize="inherit" />
                 </IconButton>
-              </TableCell>
-            </TableRow>
+              </StyledTableCell>
+            </StyledTableRow>
           ))
         ) : (
           <Typography>No inventory items</Typography>
@@ -137,7 +156,7 @@ export default function InventoryList() {
       mt={isMobile ? "5rem" : "7rem"}
       mb={"2rem"}
       minHeight={"30rem"}
-      backgroundColor={"white"}
+      backgroundColor={"#eeeeee"}
       maxHeight={"80vh"}
     >
       <Box
@@ -171,9 +190,9 @@ export default function InventoryList() {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell align="right">Quantity</TableCell>
-                <TableCell align="right" />
+                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell align="right">Quantity</StyledTableCell>
+                <StyledTableCell align="right" />
               </TableRow>
             </TableHead>
             <TableBody>{renderInvRows()}</TableBody>

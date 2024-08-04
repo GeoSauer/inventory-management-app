@@ -8,3 +8,10 @@ export const makeErrorMessagesReadable = (message) => {
   }
   return hyphenatedPart;
 };
+
+export const truncateString = (string, maxLength) => {
+  if (string.length <= maxLength) {
+    return string;
+  }
+  return string.slice(0, maxLength - 3) + "...";
+};
