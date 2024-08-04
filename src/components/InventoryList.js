@@ -2,6 +2,7 @@
 
 import { useInventory } from "@/context/InventoryContext";
 import {
+  Avatar,
   Box,
   IconButton,
   Paper,
@@ -36,6 +37,7 @@ export default function InventoryList() {
   const [oldName, setOldName] = useState(itemName);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [image, setImage] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -65,7 +67,7 @@ export default function InventoryList() {
     if (editing) {
       editItem(oldName, { name: itemName, quantity: itemQuantity });
     } else {
-      addItem(itemName, itemQuantity);
+      addItem(itemName, itemQuantity, image);
     }
 
     resetState();
@@ -113,7 +115,7 @@ export default function InventoryList() {
       fontSize: 14,
     },
   }));
-  console.log(theme.palette);
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
@@ -127,23 +129,27 @@ export default function InventoryList() {
   const renderInvRows = () => {
     return (
       <>
-        {filteredItems.length > 0 ? (
-          filteredItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => (
-            <StyledTableRow key={item.name}>
-              <StyledTableCell component="th" scope="row">
-                {item.name}
-              </StyledTableCell>
-              <StyledTableCell align="right">{item.quantity}</StyledTableCell>
-              <StyledTableCell align="right">
-                <IconButton size="sm" onClick={() => handleEdit(item.name, item.quantity)}>
-                  <ModeEditIcon fontSize="inherit" />
-                </IconButton>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))
-        ) : (
-          <Typography>No inventory items</Typography>
-        )}
+        {filteredItems.length > 0
+          ? filteredItems
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((item) => (
+                <StyledTableRow key={item.name}>
+                  <StyledTableCell component="th" scope="row">
+                    {item.name}
+                  </StyledTableCell>
+                  {/* <StyledTableCell align="right">
+                    <Avatar variant="square" src={item.imageUrl} alt={item.name} />
+                  </StyledTableCell> */}{" "}
+                  {/* //TODO urls are generating but don't link to an image*/}
+                  <StyledTableCell align="right">{item.quantity}</StyledTableCell>
+                  <StyledTableCell align="right">
+                    <IconButton size="sm" onClick={() => handleEdit(item.name, item.quantity)}>
+                      <ModeEditIcon fontSize="inherit" />
+                    </IconButton>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))
+          : null}
       </>
     );
   };
@@ -183,6 +189,8 @@ export default function InventoryList() {
           setItemQuantity={setItemQuantity}
           oldName={oldName}
           onAddItem={handleAddItem}
+          image={image}
+          setImage={setImage}
         />
       </Stack>
       <Paper sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -191,6 +199,7 @@ export default function InventoryList() {
             <TableHead>
               <TableRow>
                 <StyledTableCell>Name</StyledTableCell>
+                {/* <StyledTableCell align="right" /> */}
                 <StyledTableCell align="right">Quantity</StyledTableCell>
                 <StyledTableCell align="right" />
               </TableRow>

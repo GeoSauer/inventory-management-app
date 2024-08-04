@@ -10,11 +10,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useRef, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
+// import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useInventory } from "@/context/InventoryContext";
+// import { Camera } from "react-camera-pro";
 
 export default function ItemModal({
   open,
@@ -26,8 +27,19 @@ export default function ItemModal({
   setItemQuantity,
   onAddItem,
   onOpen,
+  image,
+  setImage,
 }) {
   const { removeItem } = useInventory();
+  const cameraRef = useRef(null);
+  // const [addImage, setAddImage] = useState(false);
+
+  // const takePhoto = () => {
+  //   if (cameraRef.current) {
+  //     const photo = cameraRef.current.takePhoto();
+  //     setImage(photo);
+  //   }
+  // };
 
   return (
     <>
@@ -76,15 +88,48 @@ export default function ItemModal({
             />
             <ButtonGroup>
               <IconButton size="sm" onClick={onAddItem} disabled={!itemName.trim()}>
-                {editing ? <SaveIcon fontSize="inherit" /> : <AddIcon fontSize="inherit" />}
+                <SaveIcon fontSize="inherit" />
               </IconButton>
               {editing && (
-                <IconButton size="sm" onClick={() => removeItem(item.name)}>
+                <IconButton size="sm" onClick={() => removeItem(itemName)}>
                   <DeleteIcon fontSize="inherit" />
                 </IconButton>
               )}
             </ButtonGroup>
           </Stack>
+          //TODO debug camera stuff further
+          {/* {image ? (
+            <Box>
+              <img src={image} alt="Captured" style={{ width: "100%", borderRadius: "10px" }} />
+              <Button onClick={() => setImage(null)} variant="contained" sx={{ mt: 2 }}>
+                Retake Photo
+              </Button>
+            </Box>
+          ) : (
+            <Camera ref={cameraRef} aspectRatio={1 / 1} facingMode={"environment"} />
+          )} */}
+          {/* <Stack direction="row" spacing={2} justifyContent="flex-end"> */}
+          {/* {!image && (
+              <IconButton size="sm" onClick={() => setAddImage(true)}>
+                <CameraAltIcon fontSize="inherit" />
+              </IconButton>
+            )} */}
+          {/* {!image && (
+              <Button onClick={takePhoto} variant="contained">
+                Take Photo
+              </Button>
+            )} */}
+          {/* <ButtonGroup>
+              <IconButton size="sm" onClick={onAddItem} disabled={!itemName.trim()}>
+                <SaveIcon fontSize="inherit" />
+              </IconButton>
+              {editing && (
+                <IconButton size="sm" onClick={() => removeItem(itemName)}>
+                  <DeleteIcon fontSize="inherit" />
+                </IconButton>
+              )}
+            </ButtonGroup> */}
+          {/* </Stack> */}
         </Box>
       </Modal>
     </>

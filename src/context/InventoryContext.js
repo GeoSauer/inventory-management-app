@@ -4,6 +4,7 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { collection, doc, getDocs, setDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { useAuth } from "./AuthContext";
 import { firestore } from "@/app/firebase";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import Loading from "@/components/Loading";
 
 const InventoryContext = createContext(undefined);
@@ -12,6 +13,8 @@ export const InventoryProvider = ({ children }) => {
   const { user } = useAuth();
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const storage = getStorage();
 
   useEffect(() => {
     if (user) {
@@ -36,14 +39,39 @@ export const InventoryProvider = ({ children }) => {
     }
   };
 
-  const addItem = async (item, quantity) => {
+  const addItem = async (item, quantity, imageFile) => {
     if (user) {
       setLoading(true);
       try {
         const itemRef = doc(firestore, `users/${user.uid}/inventory/${item}`);
         const itemSnap = await getDoc(itemRef);
         const currentQuantity = itemSnap.exists() ? itemSnap.data().quantity || 0 : 0;
-        await setDoc(itemRef, { quantity: currentQuantity + quantity }, { merge: true });
+
+        let imageUrl = "";
+
+        if (imageFile) {
+          const storageRef = ref(storage, `users/${user.uid}/inventory/${item}`);
+          const uploadTask = uploadBytesResumable(storageRef, imageFile);
+
+          // Wait for the upload to finish and get the download URL
+          await new Promise((resolve, reject) => {
+            uploadTask.on(
+              "state_changed",
+              null,
+              (error) => reject(error),
+              async () => {
+                imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                resolve();
+              }
+            );
+          });
+        }
+        await setDoc(
+          itemRef,
+          { quantity: currentQuantity + quantity, imageUrl: imageUrl || null },
+          { merge: true }
+        );
+
         await fetchUserInventory(user.uid);
       } catch (error) {
         console.error("Error adding item:", error);
