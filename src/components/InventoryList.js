@@ -135,7 +135,7 @@ export default function InventoryList() {
               .map((item) => (
                 <StyledTableRow key={item.name}>
                   <StyledTableCell component="th" scope="row">
-                    {item.name}
+                    {item.name.charAt(0).toUpperCase() + item.name.toLowerCase().slice(1)}
                   </StyledTableCell>
                   {/* <StyledTableCell align="right">
                     <Avatar variant="square" src={item.imageUrl} alt={item.name} />

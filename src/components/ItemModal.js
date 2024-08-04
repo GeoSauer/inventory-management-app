@@ -74,7 +74,7 @@ export default function ItemModal({
               variant="outlined"
               fullWidth
               value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
+              onChange={(e) => setItemName(e.target.value.toLocaleLowerCase())}
             />
             <TextField
               id="item-quantity"
